@@ -1,0 +1,6 @@
+export const logo = require('./Logo.jpg')
+export const artesanal = require('./artesanal.jpg')
+export const quadrado = require('./quadrado.jpg')
+export const tradicional = require('./tradicional.jpg')
+export const porcao = require('./porcao.jpg')
+export const bebida = require('./bebida.jpg')

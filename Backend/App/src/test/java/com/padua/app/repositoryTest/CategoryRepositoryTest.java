@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -47,5 +49,47 @@ public class CategoryRepositoryTest {
         boolean exists = repository.existsByName(name);
 
         assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve obter uma categoria por id.")
+    public void findByIdTest(){
+
+        String name = "category";
+        Category category = Category.builder().name(name).build();
+        entityManager.persist(category);
+
+        Optional<Category> foundCat = repository.findById(category.getId());
+
+        assertThat(foundCat.isPresent()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve salvar uma categoria.")
+    public void saveCategoryTest(){
+
+        String name = "category";
+        Category category = Category.builder().name(name).build();
+
+        Category savedCategory = repository.save(category);
+
+        assertThat(savedCategory.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deve deletar uma categoria.")
+    public void deleteCategoryTest(){
+
+        String name = "category";
+        Category category = Category.builder().name(name).build();
+        entityManager.persist(category);
+
+        Category foundCat = entityManager.find(Category.class, category.getId());
+
+        repository.delete(foundCat);
+
+        Category deletedCat = entityManager.find(Category.class, category.getId());
+
+        assertThat(deletedCat).isNull();
     }
 }

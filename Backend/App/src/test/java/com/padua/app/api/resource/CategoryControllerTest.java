@@ -1,6 +1,7 @@
 package com.padua.app.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.padua.app.controllers.CategoryController;
 import com.padua.app.data.dto.CategoryDTO;
 import com.padua.app.exceptions.BusinessExceptions;
 import com.padua.app.model.entity.Category;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,13 +21,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest
+@WebMvcTest(controllers = CategoryController.class)
 @AutoConfigureMockMvc
 public class CategoryControllerTest {
 
@@ -45,7 +49,7 @@ public class CategoryControllerTest {
         CategoryDTO dto = createNewCategory();
         Category savedCategory = Category.builder().id(1L).name("Category").build();
 
-        BDDMockito.given(service.create(Mockito.any(Category.class))).willReturn(savedCategory);
+        BDDMockito.given(service.create(any(Category.class))).willReturn(savedCategory);
 
         String json = new ObjectMapper().writeValueAsString(dto);
 
@@ -92,7 +96,7 @@ public class CategoryControllerTest {
 
         String errorMessage = "Nome já cadastrado.";
 
-        BDDMockito.given(service.create(Mockito.any(Category.class)))
+        BDDMockito.given(service.create(any(Category.class)))
                 .willThrow(new BusinessExceptions(errorMessage));
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -108,7 +112,122 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("errorList[0]").value(errorMessage));
     }
 
+    @Test
+    @DisplayName("Deve obter informações de uma categoria.")
+    public void getCategoryDetailstest() throws Exception {
+
+        Long id = 1L;
+
+        Category category = Category.builder().id(id).name("category").build();
+
+        BDDMockito.given(service.findById(id)).willReturn(Optional.of(category));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(Category_API.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform( request )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(id))
+                .andExpect(jsonPath("name").value(category.getName()));
+    }
+
+    @Test
+    @DisplayName("Deve obter resource not found quando a categoria procurada não existir..")
+    public void categoryNotFoundTest() throws Exception {
+
+        BDDMockito.given(service.findById(anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(Category_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform( request )
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    @DisplayName("Deve deletar uma categoria.")
+    public void deleteCategoryTest() throws Exception {
+
+        BDDMockito.given(service.findById(anyLong())).willReturn(Optional.of(Category.builder().id(1L).build()));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .delete(Category_API.concat("/" + 1));
+
+        mvc
+                .perform( request )
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deve retornar resource nor found quando não encontrar a categoria para deletar..")
+    public void deleteInexistentCategoryTest() throws Exception {
+
+        BDDMockito.given(service.findById(anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .delete(Category_API.concat("/" + 1));
+
+        mvc
+                .perform( request )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve atualizar uma categoria.")
+    public void updateCategoryTest() throws Exception {
+
+        Long id = 1L;
+        String json = new ObjectMapper().writeValueAsString(createNewCategory());
+
+        Category updatingcat = Category.builder().id(1L).name("some name").build();
+
+        BDDMockito.given(service.findById(id))
+                .willReturn(Optional.of(updatingcat));
+
+        Category updatedcat = Category.builder().id(id).name("Category").build();
+
+        BDDMockito.given(service.update(updatingcat)).willReturn(updatedcat);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put( Category_API.concat("/" + 1))
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform( request )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath("id").value(id) )
+                .andExpect( jsonPath("name").value(createNewCategory().getName()) );
+    }
+
+    @Test
+    @DisplayName("Deve retornar 404 ao tentar atualizar Categoria inexistente.")
+    public void updateInexistentCategoryTest() throws Exception {
+
+        String json = new ObjectMapper().writeValueAsString(createNewCategory());
+
+        BDDMockito.given(service.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put( Category_API.concat("/") + 1 )
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform( request )
+                .andExpect( status().isNotFound() );
+    }
+
     private CategoryDTO createNewCategory() {
+
         return CategoryDTO.builder().name("Category").build();
     }
 }

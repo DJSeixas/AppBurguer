@@ -1,9 +1,0 @@
-spring:
-  main:
-    banner-mode: off
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-      show-sql: false

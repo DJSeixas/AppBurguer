@@ -27,4 +27,7 @@ public class Category implements Serializable {
     @Column(nullable = false, length = 80)
     private String name;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "category")
+    private List<Product> products = new ArrayList<>();
 }

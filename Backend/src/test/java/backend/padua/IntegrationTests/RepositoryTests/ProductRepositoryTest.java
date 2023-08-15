@@ -1,8 +1,8 @@
 package backend.padua.IntegrationTests.RepositoryTests;
 
-
 import backend.padua.model.Category;
-import backend.padua.repositories.CategoryRepository;
+import backend.padua.model.Product;
+import backend.padua.repositories.ProductRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,28 +12,32 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest
-public class CategoryRepositoryTest {
+public class ProductRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
 
     @Autowired
-    CategoryRepository repository;
+    ProductRepository repository;
 
     @Test
-    @DisplayName("Deve retornar verdadeiro quando existir uma categoria na base com o nome informado")
+    @DisplayName("Deve retornar verdadeiro quando existir um produto na base com o nome informado")
     public void returnTrueWhenNameExists(){
-
-        String name = "Category";
 
         Category cat = Category.builder().name("Category").build();
 
         entityManager.persist(cat);
+
+        String name = "Product";
+
+        Product prod = Product.builder().name("Product").price(10.0).category(cat).build();
+
+        entityManager.persist(prod);
 
         boolean exists = repository.existsByName(name);
 
@@ -42,10 +46,10 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve retornar falso quando não existir uma categoria na base com o nome informado")
+    @DisplayName("Deve retornar falso quando não existir um produto na base com o nome informado")
     public void returnFalseWhenNameExists(){
 
-        String name = "Category";
+        String name = "Product";
 
         boolean exists = repository.existsByName(name);
 
@@ -54,53 +58,53 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve obter uma categoria por id.")
+    @DisplayName("Deve obter um produto por id.")
     public void findByIdTest() {
 
         Category cat = Category.builder().name("Category").build();
+
         entityManager.persist(cat);
 
-        var foundCat = repository.findById(cat.getId());
+        Product prod = Product.builder().name("Product").price(10.0).category(cat).build();
+        entityManager.persist(prod);
 
-        assertThat( foundCat.isPresent() ).isTrue();
+        var foundProd = repository.findById(prod.getId());
+
+        assertThat( foundProd.isPresent() ).isTrue();
     }
 
     @Test
-    @DisplayName("Deve obter uma categoria por nome.")
-    public void findByNameTest() {
+    @DisplayName("Deve salvar um produto.")
+    public void saveProductTest() {
 
         Category cat = Category.builder().name("Category").build();
+
         entityManager.persist(cat);
 
-        var foundCat = repository.findByName(cat.getName());
+        Product prod = Product.builder().name("Product").price(10.0).category(cat).build();
 
-        assertThat( foundCat.isPresent() ).isTrue();
-    }
-
-    @Test
-    @DisplayName("Deve salvar uma categoria.")
-    public void saveCategoryTest() {
-        Category cat = Category.builder().name("Category").build();
-
-        Category savedCat = repository.save(cat);
+        Product savedCat = repository.save(prod);
 
         assertThat( savedCat.getId() ).isNotNull();
     }
 
     @Test
-    @DisplayName("Deve salvar uma categoria.")
-    public void deleteCategoryTest() {
+    @DisplayName("Deve salvar um produto.")
+    public void deleteProductTest() {
 
         Category cat = Category.builder().name("Category").build();
+
         entityManager.persist(cat);
 
-        Category foundCat = entityManager.find(Category.class, cat.getId());
+        Product prod = Product.builder().name("Product").price(10.0).category(cat).build();
+        entityManager.persist(prod);
 
-        repository.delete(foundCat);
+        Product foundProd = entityManager.find(Product.class, prod.getId());
 
-        Category deleteCat = entityManager.find(Category.class, cat.getId());
+        repository.delete(foundProd);
+
+        Product deleteCat = entityManager.find(Product.class, prod.getId());
 
         assertThat(deleteCat).isNull();
     }
-
 }

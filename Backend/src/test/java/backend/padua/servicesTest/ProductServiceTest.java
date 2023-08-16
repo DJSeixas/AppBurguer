@@ -140,11 +140,13 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Deve obter uma lista dos produtos.")
-    public void FindAllProductsTest(){
+    public void findAllProductsTest(){
 
-        ProductDTO dtoProduct1 = ProductDTO.builder().id(1L).name("Product1").build();
-        ProductDTO dtoProduct2 = ProductDTO.builder().id(2L).name("Product2").build();
-        ProductDTO dtoProduct3 = ProductDTO.builder().id(3L).name("Product3").build();
+        Category cat = Category.builder().name("Category").build();
+
+        ProductDTO dtoProduct1 = ProductDTO.builder().id(1L).name("Product1").category("Category").build();
+        ProductDTO dtoProduct2 = ProductDTO.builder().id(2L).name("Product2").category("Category").build();
+        ProductDTO dtoProduct3 = ProductDTO.builder().id(3L).name("Product3").category("Category").build();
 
         List<ProductDTO> dtoProducts = new ArrayList<>();
 
@@ -152,9 +154,9 @@ public class ProductServiceTest {
         dtoProducts.add(dtoProduct2);
         dtoProducts.add(dtoProduct3);
 
-        Product product1 = Product.builder().id(1L).name("Product1").build();
-        Product product2 = Product.builder().id(2L).name("Product2").build();
-        Product product3 = Product.builder().id(3L).name("Product3").build();
+        Product product1 = Product.builder().id(1L).name("Product1").category(cat).build();
+        Product product2 = Product.builder().id(2L).name("Product2").category(cat).build();
+        Product product3 = Product.builder().id(3L).name("Product3").category(cat).build();
 
         List<Product> products = new ArrayList<>();
 
@@ -173,22 +175,25 @@ public class ProductServiceTest {
         assertThat( prod1 ).isNotNull();
         assertThat( prod1.getLinks() ).isNotNull();
 
-        assertThat( prod1.getId() ).isEqualTo(1L);
-        assertThat( "Product1" ).isEqualTo(prod1.getName());
+        assertThat( prod1.getId() ).isEqualTo(dtoProduct1.getId());
+        assertThat( prod1.getName() ).isEqualTo(dtoProduct1.getName());
+        assertThat( prod1.getCategory() ).isEqualTo(dtoProduct1.getCategory());
         assertThat( prod1.toString().contains("links: [</api/products/1>;rel=\"self\"]") ).isTrue();
 
         assertThat( prod2 ).isNotNull();
         assertThat( prod2.getLinks() ).isNotNull();
 
-        assertThat( prod2.getId() ).isEqualTo(2L);
-        assertThat( "Product2" ).isEqualTo(prod2.getName());
+        assertThat( prod2.getId() ).isEqualTo(dtoProduct2.getId());
+        assertThat( prod2.getName() ).isEqualTo(dtoProduct2.getName());
+        assertThat( prod2.getCategory() ).isEqualTo(dtoProduct2.getCategory());
         assertThat( prod2.toString().contains("links: [</api/products/2>;rel=\"self\"]") ).isTrue();
 
         assertThat( prod3 ).isNotNull();
         assertThat( prod3.getLinks() ).isNotNull();
 
-        assertThat( prod3.getId() ).isEqualTo(3L);
-        assertThat( "Product3" ).isEqualTo(prod3.getName());
+        assertThat( prod3.getId() ).isEqualTo(dtoProduct3.getId());
+        assertThat( prod3.getName() ).isEqualTo(dtoProduct3.getName());
+        assertThat( prod3.getCategory() ).isEqualTo(dtoProduct3.getCategory());
         assertThat( prod3.toString().contains("links: [</api/products/3>;rel=\"self\"]") ).isTrue();
     }
 

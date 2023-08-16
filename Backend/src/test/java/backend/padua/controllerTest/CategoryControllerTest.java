@@ -69,7 +69,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    @DisplayName("Deve lançar erro de validação quando não houver dados sufucientes para a criação do livro")
+    @DisplayName("Deve lançar erro de validação quando não houver dados suficientes para a criação da categoria")
     public void createInvalidCategoryTest() throws Exception {
 
         String json = new ObjectMapper().writeValueAsString(new CategoryDTO());

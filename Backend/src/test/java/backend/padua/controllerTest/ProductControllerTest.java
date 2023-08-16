@@ -70,7 +70,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("Deve lançar erro de validação ao tentar criar produto inválido.")
+    @DisplayName("Deve lançar erro de validação ao tentar criar produto com dados insuficientes.")
     public void createInvalidProductTest() throws Exception{
 
         String json = new ObjectMapper().writeValueAsString(new ProductDTO());
@@ -173,12 +173,18 @@ public class ProductControllerTest {
 
                 .andExpect( jsonPath("$[0].id").value(product1.getId()) )
                 .andExpect( jsonPath("$[0].name").value(product1.getName()) )
+                .andExpect( jsonPath("$[0].price").value(product1.getPrice()) )
+                .andExpect( jsonPath("$[0].category").value(product1.getCategory()) )
 
                 .andExpect( jsonPath("$[1].id").value(product2.getId()) )
                 .andExpect( jsonPath("$[1].name").value(product2.getName()) )
+                .andExpect( jsonPath("$[1].price").value(product2.getPrice()) )
+                .andExpect( jsonPath("$[1].category").value(product2.getCategory()) )
 
                 .andExpect( jsonPath("$[2].id").value(product3.getId()) )
-                .andExpect( jsonPath("$[2].name").value(product3.getName()) );
+                .andExpect( jsonPath("$[2].name").value(product3.getName()) )
+                .andExpect( jsonPath("$[2].price").value(product3.getPrice()) )
+                .andExpect( jsonPath("$[2].category").value(product3.getCategory()) );
 
     }
 
@@ -207,7 +213,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("Deve deletar um produto..")
+    @DisplayName("Deve deletar um produto.")
     public void deleteProductTest() throws Exception{
 
         given(service.findById(Mockito.anyLong())).willReturn(ProductDTO.builder().id(1L).name("Product").price(10.0).category("Category").build());

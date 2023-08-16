@@ -134,22 +134,22 @@ public class CategoryServiceTest {
         assertThat( cat1 ).isNotNull();
         assertThat( cat1.getLinks() ).isNotNull();
 
-        assertThat( cat1.getId() ).isEqualTo(1L);
-        assertThat( "Category1" ).isEqualTo(cat1.getName());
+        assertThat( cat1.getId() ).isEqualTo(dtoCategory1.getId());
+        assertThat( cat1.getName() ).isEqualTo(dtoCategory1.getName());
         assertThat( cat1.toString().contains("links: [</api/categories/1>;rel=\"self\"]") ).isTrue();
 
         assertThat( cat2 ).isNotNull();
         assertThat( cat2.getLinks() ).isNotNull();
 
-        assertThat( cat2.getId() ).isEqualTo(2L);
-        assertThat( "Category2" ).isEqualTo(cat2.getName());
+        assertThat( cat2.getId() ).isEqualTo(dtoCategory2.getId());
+        assertThat( cat2.getName() ).isEqualTo(dtoCategory2.getName());
         assertThat( cat2.toString().contains("links: [</api/categories/2>;rel=\"self\"]") ).isTrue();
 
         assertThat( cat3 ).isNotNull();
         assertThat( cat3.getLinks() ).isNotNull();
 
-        assertThat( cat3.getId() ).isEqualTo(3L);
-        assertThat( "Category3" ).isEqualTo(cat3.getName());
+        assertThat( cat3.getId() ).isEqualTo(dtoCategory3.getId());
+        assertThat( cat3.getName() ).isEqualTo(dtoCategory3.getName());
         assertThat( cat3.toString().contains("links: [</api/categories/3>;rel=\"self\"]") ).isTrue();
     }
 

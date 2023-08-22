@@ -1,6 +1,7 @@
 package backend.padua.servicesTest;
 
 import backend.padua.data.dto.ClientDTO;
+import backend.padua.data.dto.NewClientDTO;
 import backend.padua.model.Address;
 import backend.padua.model.Client;
 import backend.padua.repositories.ClientRepository;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,6 +44,111 @@ public class ClientServiceTest {
     @DisplayName("Deve criar um cliente com sucesso.")
     public void shouldCreateClientTest(){
 
+        NewClientDTO dto = getNewClientDTO();
+
+        Address ad = Address.builder().id(1L).address("Rua").neighborhood("Bairro").number(10)
+                .complement("Complement").city("Cidade").state("Estado").cep("000000000").build();
+
+        List<Address> adList = new ArrayList<>();
+        adList.add(ad);
+
+        Set<String> phone = new HashSet<>();
+        phone.add("00123456789");
+
+        Client entity = Client.builder().name("Client").email("x@xx.com")
+                .cpf("123456789").addresses(adList).telephones(phone).build();
+
+        Client persisted = entity;
+        persisted.setId(1L);
+
+        dto.setId(1L);
+
+        when(repository.save(entity)).thenReturn(persisted);
+
+        NewClientDTO result = service.create(dto);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getLinks()).isNotNull();
+
+        assertThat(1L).isEqualTo(result.getId());
+        assertThat(dto.getName()).isEqualTo(result.getName());
+        assertThat(dto.getEmail()).isEqualTo(result.getEmail());
+        assertThat(dto.getCpf()).isEqualTo(result.getCpf());
+        assertThat(dto.getAddress()).isEqualTo(result.getAddress());
+        assertThat(dto.getNumber()).isEqualTo(result.getNumber());
+        assertThat(dto.getComplement()).isEqualTo(result.getComplement());
+        assertThat(dto.getNeighborhood()).isEqualTo(result.getNeighborhood());
+        assertThat(dto.getCity()).isEqualTo(result.getCity());
+        assertThat(dto.getState()).isEqualTo(result.getState());
+        assertThat(dto.getCep()).isEqualTo(result.getCep());
+        assertThat(dto.getTelephone()).isEqualTo(result.getTelephone());
+        assertThat( result.toString().contains("links: [</api/clients/1>;rel=\"self\"]") ).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro ao tentar criar cliente nulo.")
+    public void ShouldNotCreateInvalidClient(){
+
+        Throwable exception = catchThrowable(() ->
+                service.create(null));
+
+        String expectedMessage = "It is not allowed to persist a null object!";
+        String actualMessage = exception.getMessage();
+
+        assertThat(actualMessage).contains(expectedMessage);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um cliente com sucesso.")
+    public void shouldUpdateClientTest(){
+
+        Long id = 1L;
+
+        ClientDTO dto = ClientDTO.builder().name("NewClient").email("xx@xx.com").build();
+
+        Address ad = Address.builder().id(1L).address("Rua").neighborhood("Bairro").number(10)
+                .complement("Complement").city("Cidade").state("Estado").cep("000000000").build();
+
+        List<Address> adList = new ArrayList<>();
+        adList.add(ad);
+
+        Set<String> phone = new HashSet<>();
+        phone.add("00123456789");
+
+        Client entity = Client.builder().name("Client").email("x@xx.com")
+                .cpf("123456789").addresses(adList).telephones(phone).build();
+
+        Client persisted = entity;
+        persisted.setId(id);
+
+        dto.setId(id);
+
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
+        when(repository.save(entity)).thenReturn(persisted);
+
+        ClientDTO result = service.update(dto);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getLinks()).isNotNull();
+
+        assertThat(1L).isEqualTo(result.getId());
+        assertThat(dto.getName()).isEqualTo(result.getName());
+        assertThat(dto.getEmail()).isEqualTo(result.getEmail());
+        assertThat( result.toString().contains("links: [</api/clients/1>;rel=\"self\"]") ).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro ao tentar atualizar cliente nulo.")
+    public void shouldNotUpdateNullClientTest(){
+        Throwable exception = catchThrowable(() ->
+                service.update(null));
+
+        String expectedMessage = "It is not allowed to persist a null object!";
+        String actualMessage = exception.getMessage();
+
+        assertThat(actualMessage).contains(expectedMessage);
     }
 
     @Test
@@ -158,5 +265,50 @@ public class ClientServiceTest {
         String actualMessage = exception.getMessage();
 
         assertThat(actualMessage).contains(expectedMessage);
+    }
+
+    @Test
+    @DisplayName("Deve deletar um cliente.")
+    public void shouldDeleteClientTest(){
+        Long id = 1L;
+
+        Address ad = Address.builder().id(id).address("Rua").neighborhood("Bairro").number(10)
+                .complement(null).city("Cidade").state("Estado").cep("000000000").build();
+
+        List<Address> adList = new ArrayList<>();
+        adList.add(ad);
+
+        Set<String> phone = new HashSet<>();
+        phone.add("00123456789");
+
+        Client entity = Client.builder().id(id).name("Client").email("x@xx.com")
+                .cpf("123456789").addresses(adList).telephones(phone).build();
+
+        ad.setClient(entity);
+
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
+
+        service.delete(id);
+
+        Mockito.verify(repository, Mockito.times(1)).delete(entity);
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro ao tentar deletar cliente nulo.")
+    public void deleteNullClientTest(){
+
+        Throwable exception = catchThrowable(() ->
+                service.delete(null));
+
+        String expectedMessage = "No records found for this id!";
+        String actualMessage = exception.getMessage();
+
+        assertThat(actualMessage).contains(expectedMessage);
+    }
+
+    private static NewClientDTO getNewClientDTO() {
+        return NewClientDTO.builder().name("Client").email("x@xx.com").cpf("77058753067")
+                .address("Rua").number(1).complement("complement").neighborhood("Bairro").city("Cidade")
+                .state("Estado").cep("10111000").telephone("12912345678").build();
     }
 }

@@ -64,7 +64,7 @@ public class ProductService {
 
         if(product == null) throw new RequiredObjectIsNullException();
 
-        var entity = repository.findById(product.getId())
+        Product entity = repository.findById(product.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this id!"));
 
         entity.setName(product.getName());
@@ -72,7 +72,7 @@ public class ProductService {
 
         repository.save(entity);
 
-        var prod = modelMapper.map(entity, ProductDTO.class);
+        ProductDTO prod = modelMapper.map(entity, ProductDTO.class);
 
         prod.add(linkTo(methodOn(ProductController.class).findById(prod.getId())).withSelfRel());
 

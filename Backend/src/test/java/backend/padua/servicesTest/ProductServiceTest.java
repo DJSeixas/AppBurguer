@@ -73,9 +73,9 @@ public class ProductServiceTest {
         assertThat(result.getLinks()).isNotNull();
 
         assertThat(1L).isEqualTo(result.getId());
-        assertThat("Product").isEqualTo(result.getName());
-        assertThat(10.0).isEqualTo(result.getPrice());
-        assertThat("Category").isEqualTo(result.getCategory());
+        assertThat(dto.getName()).isEqualTo(result.getName());
+        assertThat(dto.getPrice()).isEqualTo(result.getPrice());
+        assertThat(dto.getCategory()).isEqualTo(result.getCategory());
         assertThat( result.toString().contains("links: [</api/products/1>;rel=\"self\"]") ).isTrue();
 
     }
@@ -95,7 +95,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Deve atualizar um produto.")
-    public void updateProductTest() throws Exception{
+    public void updateProductTest(){
 
         Long id = 1L;
 
@@ -119,15 +119,15 @@ public class ProductServiceTest {
         assertThat(result.getId()).isNotNull();
         assertThat(result.getLinks()).isNotNull();
 
-        assertThat("newProduct").isEqualTo(result.getName());
-        assertThat(20.0).isEqualTo(result.getPrice());
-        assertThat("Category").isEqualTo(result.getCategory());
+        assertThat(dto.getName()).isEqualTo(result.getName());
+        assertThat(dto.getPrice()).isEqualTo(result.getPrice());
+        assertThat(dto.getCategory()).isEqualTo(result.getCategory());
         assertThat( result.toString().contains("links: [</api/products/1>;rel=\"self\"]") ).isTrue();
     }
 
     @Test
     @DisplayName("Deve lançar erro ao tentar atualizar produto nulo.")
-    public void updateWithNullProductTest() throws Exception{
+    public void updateWithNullProductTest(){
 
         Throwable exception = catchThrowable(() ->
                 service.update(null));
@@ -249,7 +249,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Deve deletar um produto.")
-    public void deleteProductTest() throws Exception{
+    public void deleteProductTest(){
 
         Long id = 1L;
 
@@ -268,7 +268,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Deve lançar erro ao tentar deletar produto nulo.")
-    public void deleteNullProductTest() throws Exception{
+    public void deleteNullProductTest(){
 
         Throwable exception = catchThrowable(() ->
                 service.delete(null));

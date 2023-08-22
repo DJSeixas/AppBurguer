@@ -62,7 +62,7 @@ public class CategoryServiceTest {
         assertThat(result.getId()).isNotNull();
         assertThat(result.getLinks()).isNotNull();
 
-        assertThat("Category").isEqualTo(result.getName());
+        assertThat(dto.getName()).isEqualTo(result.getName());
         assertThat( result.toString().contains("links: [</api/categories/1>;rel=\"self\"]") ).isTrue();
     }
 

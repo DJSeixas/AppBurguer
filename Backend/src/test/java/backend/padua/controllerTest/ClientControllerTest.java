@@ -251,7 +251,10 @@ public class ClientControllerTest {
     @DisplayName("Deve deletar um cliente.")
     public void deleteClientTest() throws Exception{
 
-        given(service.findById(Mockito.anyLong())).willReturn(ClientDTO.builder().id(1L).name("client").email("x@xx.com").build());
+        ClientDTO dto = ClientDTO.builder().id(1L).name("client").email("x@xx.com").build();
+
+        given(service.findById(Mockito.anyLong()))
+                .willReturn(dto);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .delete(CLIENT_API.concat("/"+ 1));

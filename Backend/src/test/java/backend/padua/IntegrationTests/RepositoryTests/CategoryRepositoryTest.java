@@ -26,7 +26,7 @@ public class CategoryRepositoryTest {
     CategoryRepository repository;
 
     @Test
-    @DisplayName("Deve retornar verdadeiro quando existir uma categoria na base com o nome informado")
+    @DisplayName("Deve retornar verdadeiro quando existir uma client na base com o nome informado")
     public void returnTrueWhenNameExists(){
 
         String name = "Category";
@@ -42,7 +42,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve retornar falso quando não existir uma categoria na base com o nome informado")
+    @DisplayName("Deve retornar falso quando não existir uma client na base com o nome informado")
     public void returnFalseWhenNameExists(){
 
         String name = "Category";
@@ -54,7 +54,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve obter uma categoria por id.")
+    @DisplayName("Deve obter uma client por id.")
     public void findByIdTest() {
 
         Category cat = Category.builder().name("Category").build();
@@ -66,7 +66,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve obter uma categoria por nome.")
+    @DisplayName("Deve obter uma client por nome.")
     public void findByNameTest() {
 
         Category cat = Category.builder().name("Category").build();
@@ -78,7 +78,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve salvar uma categoria.")
+    @DisplayName("Deve salvar uma client.")
     public void saveCategoryTest() {
         Category cat = Category.builder().name("Category").build();
 
@@ -88,7 +88,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve salvar uma categoria.")
+    @DisplayName("Deve salvar uma client.")
     public void deleteCategoryTest() {
 
         Category cat = Category.builder().name("Category").build();

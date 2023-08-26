@@ -1,5 +1,6 @@
 package backend.padua.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,5 +43,9 @@ public class Client implements Serializable {
     @ElementCollection
     @CollectionTable(name = "telephones")
     private Set<String> telephones = new HashSet<>();
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "client")
+    private List<Order> orders = new ArrayList<>();
 
 }
